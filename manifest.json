@@ -1,11 +1,11 @@
 {
-  "name": "Astro-Nomad",
+  "name": "Salva-al-Gato",
   "short_name": "Salva-al-Gato",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
-  "description": "Un video juego retro de supervivencia",
+  "description": "Un videojuego retro de supervivencia",
   "icons": [
     {
       "src": "icon-192.png",

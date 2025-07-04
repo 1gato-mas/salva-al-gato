@@ -132,7 +132,7 @@ startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
 
 shareButton.addEventListener('click', () => {
-    const text = `Mi puntaje en ${score} in #salva_al_gato! Puedes mejorarlo?`;
+    const text = `Sobreviví con un puntaje de ${score} en #Salva-al-gato! Me puedes vencer?`;
     const gameUrl = window.location.href;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(gameUrl)}`;
     window.open(twitterUrl, '_blank');
@@ -150,14 +150,17 @@ document.addEventListener('keyup', e => {
 
 // Touch controls
 canvas.addEventListener('touchstart', e => {
+    // This line directly prevents the default browser action (like zooming).
+    e.preventDefault();
     const touchX = e.touches[0].clientX;
     if (touchX < canvas.width / 2) {
         player.dx = -5;
     } else {
         player.dx = 5;
     }
-});
+}, { passive: false }); // This part is necessary to allow preventDefault to work.
 
-canvas.addEventListener('touchend', () => {
+canvas.addEventListener('touchend', e => {
+    e.preventDefault();
     player.dx = 0;
 });
