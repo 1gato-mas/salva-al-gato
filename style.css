@@ -18,6 +18,7 @@ body {
 canvas {
     background-color: #111;
     display: block;
+    touch-action: manipulation;
 }
 
 #start-screen, #game-over-screen {
