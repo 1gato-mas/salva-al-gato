@@ -8,25 +8,17 @@ const restartButton = document.getElementById('restart-button');
 const shareButton = document.getElementById('share-button');
 const finalScoreSpan = document.getElementById('final-score');
 
-// --- NUEVO: Obtener los elementos de sonido de la explosión y el grito ---
+// --- NUEVO: Obtener el elemento de audio ---
 const gameMusic = document.getElementById('gameMusic');
-const explosionSound = document.getElementById('explosionSound');
-const screamSound = document.getElementById('screamSound');
-
-// --- NUEVO: Crear la secuencia de sonidos ---
-// Cuando el sonido de la explosión termine, se reproducirá el del grito.
-explosionSound.onended = function() {
-    screamSound.play();
-};
 
 const playerImage = new Image();
-playerImage.src = 'gato.png';
+playerImage.src = 'gato.png'; // Asegúrate de que este archivo esté en la misma carpeta
 
 const player = {
-    x: canvas.width / 2 - 25,
-    y: canvas.height - 70,
-    width: 20,
-    height: 20,
+    x: canvas.width / 2 - 25, // Centrado con el nuevo ancho
+    y: canvas.height - 70,    // Un poco más arriba para la nueva altura
+    width: 20,                // Ancho de la imagen del jugador
+    height: 20,               // Alto de la imagen del jugador
     dx: 0
 };
 
@@ -35,7 +27,6 @@ let score = 0;
 let gameOver = false;
 let gameRunning = false;
 let scoreInterval;
-
 
 function createAsteroid() {
     asteroids.push({
@@ -70,10 +61,7 @@ function detectCollisions() {
             player.y < asteroid.y + asteroid.size &&
             player.y + player.height > asteroid.y
         ) {
-            // Solo llama a endGame la primera vez que se detecta una colisión
-            if (!gameOver) {
-                endGame();
-            }
+            endGame();
         }
     });
 }
@@ -92,7 +80,7 @@ function drawAsteroids() {
 function drawScore() {
     ctx.fillStyle = '#fff';
     ctx.font = '20px "Courier New", Courier, monospace';
-    ctx.fillText(`Score: ${score}`, 10, 25);
+    ctx.fillText(`Puntaje: ${score}`, 10, 25);
 }
 
 function clearCanvas() {
@@ -109,15 +97,10 @@ function update() {
 
     movePlayer();
     moveAsteroids();
-    // La detección de colisión ahora sucede en el bucle principal
-    if (gameRunning) {
-        detectCollisions();
-    }
-
+    detectCollisions();
 
     requestAnimationFrame(update);
 }
-
 
 function startGame() {
     gameRunning = true;
@@ -127,10 +110,10 @@ function startGame() {
     asteroids = [];
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
-
-    gameMusic.currentTime = 0;
-    gameMusic.play();
-
+    
+    // --- NUEVO: Reproducir la música ---
+    gameMusic.currentTime = 0; // Reinicia la música
+    gameMusic.play(); // La reproduce
 
     scoreInterval = setInterval(() => {
         if(gameRunning) score++;
@@ -143,38 +126,28 @@ function startGame() {
     update();
 }
 
-// --- CAMBIADO: La función endGame ahora dispara los sonidos ---
 function endGame() {
-    // Marcamos el juego como terminado para evitar múltiples llamadas
-    gameOver = true;
     gameRunning = false;
     clearInterval(scoreInterval);
     
-    // Detener la música de fondo
+    // --- NUEVO: Pausar la música ---
     gameMusic.pause();
-    
-    // Reiniciar y reproducir el sonido de la explosión
-    explosionSound.currentTime = 0;
-    explosionSound.play();
-    
-    // Mostrar la pantalla de Game Over (con un pequeño retraso para que se oigan los sonidos)
-    setTimeout(() => {
-        finalScoreSpan.textContent = score;
-        gameOverScreen.style.display = 'flex';
-    }, 500); // 500 milisegundos de retraso
+
+    finalScoreSpan.textContent = score;
+    gameOverScreen.style.display = 'flex';
 }
 
-// Event Listeners
+// Event Listeners (sin cambios)
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
 shareButton.addEventListener('click', () => {
-    const text = `Salvé al gato con un puntaje de ${score} ! Puedes vencerme?`;
+    const text = `Salvé al gato con un puntaje de ${score} !!! Puedes vencerme?`;
     const gameUrl = window.location.href;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(gameUrl)}`;
     window.open(twitterUrl, '_blank');
 });
 
-// Controls
+// Controls (sin cambios)
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft' || e.key === 'a') player.dx = -5;
     if (e.key === 'ArrowRight' || e.key === 'd') player.dx = 5;
