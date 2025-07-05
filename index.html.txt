@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salva-Al-Gato</title>
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="AstroNomad">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="320" height="480"></canvas>
+        <div id="start-screen">
+            <h1>SALVA-AL-GATO</h1>
+            <p>Toca a los lados para salvar al gato de ser tocado por los Petro Ñeros</p>
+            <button id="start-button">Empezar</button>
+        </div>
+        <div id="game-over-screen" style="display: none;">
+            <h2>PETRO HP</h2>
+            <p>Tu puntaje: <span id="final-score">0</span></p>
+            <button id="restart-button">Quiero mas</button>
+            <button id="share-button">Comparte en X</button>
+        </div>
+    </div>
+    <audio id="gameMusic" src="background-music.mp3" loop></audio>
+    <audio id="explosionSound" src="explosion.mp3"></audio>
+    <audio id="screamSound" src="gritofinal.mp3"></audio>
+    <script src="game.js"></script>
+</body>
+</html>

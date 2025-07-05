@@ -8,8 +8,16 @@ const restartButton = document.getElementById('restart-button');
 const shareButton = document.getElementById('share-button');
 const finalScoreSpan = document.getElementById('final-score');
 
-// --- NUEVO: Obtener el elemento de audio ---
+// --- NUEVO: Obtener los elementos de sonido de la explosión y el grito ---
 const gameMusic = document.getElementById('gameMusic');
+const explosionSound = document.getElementById('explosionSound');
+const screamSound = document.getElementById('screamSound');
+
+// --- NUEVO: Crear la secuencia de sonidos ---
+// Cuando el sonido de la explosión termine, se reproducirá el del grito.
+explosionSound.onended = function() {
+    screamSound.play();
+};
 
 const playerImage = new Image();
 playerImage.src = 'gato.png';
@@ -17,8 +25,8 @@ playerImage.src = 'gato.png';
 const player = {
     x: canvas.width / 2 - 25,
     y: canvas.height - 70,
-    width: 50,
-    height: 50,
+    width: 20,
+    height: 20,
     dx: 0
 };
 
@@ -28,7 +36,6 @@ let gameOver = false;
 let gameRunning = false;
 let scoreInterval;
 
-// ... (El resto de las funciones como createAsteroid, movePlayer, etc., no cambian) ...
 
 function createAsteroid() {
     asteroids.push({
@@ -63,7 +70,10 @@ function detectCollisions() {
             player.y < asteroid.y + asteroid.size &&
             player.y + player.height > asteroid.y
         ) {
-            endGame();
+            // Solo llama a endGame la primera vez que se detecta una colisión
+            if (!gameOver) {
+                endGame();
+            }
         }
     });
 }
@@ -99,7 +109,11 @@ function update() {
 
     movePlayer();
     moveAsteroids();
-    detectCollisions();
+    // La detección de colisión ahora sucede en el bucle principal
+    if (gameRunning) {
+        detectCollisions();
+    }
+
 
     requestAnimationFrame(update);
 }
@@ -114,8 +128,6 @@ function startGame() {
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
 
-    // --- NUEVO: Reproducir la música ---
-    // Lo ponemos en currentTime = 0 para que la música se reinicie cada vez que se juega.
     gameMusic.currentTime = 0;
     gameMusic.play();
 
@@ -131,23 +143,32 @@ function startGame() {
     update();
 }
 
+// --- CAMBIADO: La función endGame ahora dispara los sonidos ---
 function endGame() {
+    // Marcamos el juego como terminado para evitar múltiples llamadas
+    gameOver = true;
     gameRunning = false;
     clearInterval(scoreInterval);
-    finalScoreSpan.textContent = score;
-    gameOverScreen.style.display = 'flex';
-
-    // --- NUEVO: Pausar la música ---
+    
+    // Detener la música de fondo
     gameMusic.pause();
+    
+    // Reiniciar y reproducir el sonido de la explosión
+    explosionSound.currentTime = 0;
+    explosionSound.play();
+    
+    // Mostrar la pantalla de Game Over (con un pequeño retraso para que se oigan los sonidos)
+    setTimeout(() => {
+        finalScoreSpan.textContent = score;
+        gameOverScreen.style.display = 'flex';
+    }, 500); // 500 milisegundos de retraso
 }
-
-// ... (El resto del código, Listeners y Controles, no cambia) ...
 
 // Event Listeners
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
 shareButton.addEventListener('click', () => {
-    const text = `Sobreviví con un puntaje de ${score} en el juego salva-al-gato! Puedes vencerme?`;
+    const text = `Salvé al gato con un puntaje de ${score} ! Puedes vencerme?`;
     const gameUrl = window.location.href;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(gameUrl)}`;
     window.open(twitterUrl, '_blank');
