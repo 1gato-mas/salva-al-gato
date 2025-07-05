@@ -8,13 +8,18 @@ const restartButton = document.getElementById('restart-button');
 const shareButton = document.getElementById('share-button');
 const finalScoreSpan = document.getElementById('final-score');
 
+// --- NUEVO: Cargar la imagen del jugador ---
+const playerImage = new Image();
+playerImage.src = 'gato.png'; // Asegúrate de que este archivo esté en la misma carpeta
+
+// --- CAMBIADO: Ajustar el objeto del jugador ---
 const player = {
-    x: canvas.width / 2 - 10,
-    y: canvas.height - 60,
-    width: 20,
-    height: 20,
-    color: '#0ff',
+    x: canvas.width / 2 - 25, // Centrado con el nuevo ancho
+    y: canvas.height - 70,    // Un poco más arriba para la nueva altura
+    width: 20,                // Ancho de la imagen del jugador
+    height: 20,               // Alto de la imagen del jugador
     dx: 0
+    // La propiedad 'color' ya no es necesaria
 };
 
 let asteroids = [];
@@ -27,8 +32,8 @@ function createAsteroid() {
     asteroids.push({
         x: Math.random() * canvas.width,
         y: 0,
-        size: Math.random() * 15 + 10, // size between 10 and 25
-        speed: Math.random() * 2 + 1, // speed between 1 and 3
+        size: Math.random() * 15 + 10,
+        speed: Math.random() * 2 + 1,
         color: '#f0f'
     });
 }
@@ -61,9 +66,10 @@ function detectCollisions() {
     });
 }
 
+// --- CAMBIADO: La función para dibujar al jugador ---
 function drawPlayer() {
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+    // En lugar de dibujar un cuadro, ahora dibujamos la imagen
+    ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
 }
 
 function drawAsteroids() {
@@ -102,17 +108,16 @@ function startGame() {
     gameRunning = true;
     gameOver = false;
     score = 0;
-    player.x = canvas.width / 2 - 10;
+    // Restablecer la posición del jugador al centro
+    player.x = canvas.width / 2 - player.width / 2;
     asteroids = [];
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
 
-    // Increase score every second
     scoreInterval = setInterval(() => {
         if(gameRunning) score++;
     }, 100);
 
-    // Create asteroids periodically
     setInterval(() => {
         if(gameRunning) createAsteroid();
     }, 600);
@@ -127,30 +132,25 @@ function endGame() {
     gameOverScreen.style.display = 'flex';
 }
 
-// Event Listeners
+// Event Listeners (sin cambios)
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
-
 shareButton.addEventListener('click', () => {
-    const text = `Sobreviví con un puntaje de ${score} en #Salva-al-gato! Me puedes vencer?`;
+    const text = `Salvé al gato con un puntaje de ${score} en el juego Salva-al-gato! Puedes vencerme?`;
     const gameUrl = window.location.href;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(gameUrl)}`;
     window.open(twitterUrl, '_blank');
 });
 
-// Controls
+// Controls (sin cambios)
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft' || e.key === 'a') player.dx = -5;
     if (e.key === 'ArrowRight' || e.key === 'd') player.dx = 5;
 });
-
 document.addEventListener('keyup', e => {
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'ArrowRight' || e.key === 'd') player.dx = 0;
 });
-
-// Touch controls
 canvas.addEventListener('touchstart', e => {
-    // This line directly prevents the default browser action (like zooming).
     e.preventDefault();
     const touchX = e.touches[0].clientX;
     if (touchX < canvas.width / 2) {
@@ -158,8 +158,7 @@ canvas.addEventListener('touchstart', e => {
     } else {
         player.dx = 5;
     }
-}, { passive: false }); // This part is necessary to allow preventDefault to work.
-
+}, { passive: false });
 canvas.addEventListener('touchend', e => {
     e.preventDefault();
     player.dx = 0;
