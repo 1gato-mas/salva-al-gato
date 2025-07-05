@@ -8,17 +8,18 @@ const restartButton = document.getElementById('restart-button');
 const shareButton = document.getElementById('share-button');
 const finalScoreSpan = document.getElementById('final-score');
 
-// --- NUEVO: Obtener el elemento de audio ---
+// --- Obtener los elementos de audio ---
 const gameMusic = document.getElementById('gameMusic');
+const explosionSound = document.getElementById('explosionSound'); // NUEVO
 
 const playerImage = new Image();
-playerImage.src = 'gato.png'; // Asegúrate de que este archivo esté en la misma carpeta
+playerImage.src = 'gato.png';
 
 const player = {
-    x: canvas.width / 2 - 25, // Centrado con el nuevo ancho
-    y: canvas.height - 70,    // Un poco más arriba para la nueva altura
-    width: 20,                // Ancho de la imagen del jugador
-    height: 20,               // Alto de la imagen del jugador
+    x: canvas.width / 2 - 25,
+    y: canvas.height - 70,
+    width: 20,
+    height: 20,
     dx: 0
 };
 
@@ -61,7 +62,10 @@ function detectCollisions() {
             player.y < asteroid.y + asteroid.size &&
             player.y + player.height > asteroid.y
         ) {
-            endGame();
+            // Solo llama a endGame si el juego no ha terminado ya
+            if (!gameOver) {
+                endGame();
+            }
         }
     });
 }
@@ -104,16 +108,15 @@ function update() {
 
 function startGame() {
     gameRunning = true;
-    gameOver = false;
+    gameOver = false; // Asegúrate de que gameOver sea falso al iniciar
     score = 0;
     player.x = canvas.width / 2 - player.width / 2;
     asteroids = [];
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
     
-    // --- NUEVO: Reproducir la música ---
-    gameMusic.currentTime = 0; // Reinicia la música
-    gameMusic.play(); // La reproduce
+    gameMusic.currentTime = 0;
+    gameMusic.play();
 
     scoreInterval = setInterval(() => {
         if(gameRunning) score++;
@@ -126,12 +129,17 @@ function startGame() {
     update();
 }
 
+// --- CAMBIADO: La función endGame ahora reproduce la explosión ---
 function endGame() {
+    gameOver = true; // Marcar el juego como terminado
     gameRunning = false;
     clearInterval(scoreInterval);
     
-    // --- NUEVO: Pausar la música ---
     gameMusic.pause();
+    
+    // --- NUEVO: Reproducir el sonido de la explosión ---
+    explosionSound.currentTime = 0; // Reinicia el sonido por si acaso
+    explosionSound.play(); // Lo reproduce
 
     finalScoreSpan.textContent = score;
     gameOverScreen.style.display = 'flex';
