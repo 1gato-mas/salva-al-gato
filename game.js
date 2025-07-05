@@ -8,18 +8,18 @@ const restartButton = document.getElementById('restart-button');
 const shareButton = document.getElementById('share-button');
 const finalScoreSpan = document.getElementById('final-score');
 
-// --- NUEVO: Cargar la imagen del jugador ---
-const playerImage = new Image();
-playerImage.src = 'gato.png'; // Asegúrate de que este archivo esté en la misma carpeta
+// --- NUEVO: Obtener el elemento de audio ---
+const gameMusic = document.getElementById('gameMusic');
 
-// --- CAMBIADO: Ajustar el objeto del jugador ---
+const playerImage = new Image();
+playerImage.src = 'gato.png';
+
 const player = {
-    x: canvas.width / 2 - 25, // Centrado con el nuevo ancho
-    y: canvas.height - 70,    // Un poco más arriba para la nueva altura
-    width: 20,                // Ancho de la imagen del jugador
-    height: 20,               // Alto de la imagen del jugador
+    x: canvas.width / 2 - 25,
+    y: canvas.height - 70,
+    width: 50,
+    height: 50,
     dx: 0
-    // La propiedad 'color' ya no es necesaria
 };
 
 let asteroids = [];
@@ -27,6 +27,8 @@ let score = 0;
 let gameOver = false;
 let gameRunning = false;
 let scoreInterval;
+
+// ... (El resto de las funciones como createAsteroid, movePlayer, etc., no cambian) ...
 
 function createAsteroid() {
     asteroids.push({
@@ -66,9 +68,7 @@ function detectCollisions() {
     });
 }
 
-// --- CAMBIADO: La función para dibujar al jugador ---
 function drawPlayer() {
-    // En lugar de dibujar un cuadro, ahora dibujamos la imagen
     ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
 }
 
@@ -104,15 +104,21 @@ function update() {
     requestAnimationFrame(update);
 }
 
+
 function startGame() {
     gameRunning = true;
     gameOver = false;
     score = 0;
-    // Restablecer la posición del jugador al centro
     player.x = canvas.width / 2 - player.width / 2;
     asteroids = [];
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
+
+    // --- NUEVO: Reproducir la música ---
+    // Lo ponemos en currentTime = 0 para que la música se reinicie cada vez que se juega.
+    gameMusic.currentTime = 0;
+    gameMusic.play();
+
 
     scoreInterval = setInterval(() => {
         if(gameRunning) score++;
@@ -130,19 +136,24 @@ function endGame() {
     clearInterval(scoreInterval);
     finalScoreSpan.textContent = score;
     gameOverScreen.style.display = 'flex';
+
+    // --- NUEVO: Pausar la música ---
+    gameMusic.pause();
 }
 
-// Event Listeners (sin cambios)
+// ... (El resto del código, Listeners y Controles, no cambia) ...
+
+// Event Listeners
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
 shareButton.addEventListener('click', () => {
-    const text = `Salvé al gato con un puntaje de ${score} en el juego Salva-al-gato! Puedes vencerme?`;
+    const text = `Sobreviví con un puntaje de ${score} en el juego salva-al-gato! Puedes vencerme?`;
     const gameUrl = window.location.href;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(gameUrl)}`;
     window.open(twitterUrl, '_blank');
 });
 
-// Controls (sin cambios)
+// Controls
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft' || e.key === 'a') player.dx = -5;
     if (e.key === 'ArrowRight' || e.key === 'd') player.dx = 5;
